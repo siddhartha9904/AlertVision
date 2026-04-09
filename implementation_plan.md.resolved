@@ -1,0 +1,128 @@
+# Real-Time Aggression Detection System — Project Outline
+
+## Overview
+
+Build **AlertV** — a real-time aggression/violence detection system that processes live or recorded video feeds, classifies frames as *aggressive* vs *non-aggressive*, and triggers alerts when violence is detected. The system will use deep learning (a fine-tuned CNN + LSTM or a 3D-CNN model) served behind a modern web dashboard.
+
+---
+
+## High-Level Architecture
+
+```mermaid
+graph LR
+    A[📹 Video Source<br>Camera / File] --> B[Backend<br>Python · FastAPI]
+    B --> C[ML Pipeline<br>Frame Extraction · Model Inference]
+    C --> D[Alert Engine<br>Threshold · Notifications]
+    B --> E[Web Dashboard<br>HTML/CSS/JS]
+    D --> E
+```
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| **ML / Video** | Python, OpenCV, PyTorch (or TensorFlow/Keras) |
+| **Model** | Fine-tuned MobileNetV2 + LSTM *or* 3D-CNN (e.g. SlowFast, R3D) |
+| **Backend API** | FastAPI (async, WebSocket support for real-time frames) |
+| **Frontend** | Vanilla HTML + CSS + JavaScript (live video + alerts dashboard) |
+| **Database** | SQLite (incident logs), optional Redis for real-time pub/sub |
+| **Deployment** | Docker, optional cloud (AWS/GCP) |
+
+---
+
+## Proposed Directory Structure
+
+```
+alertv/
+├── backend/
+│   ├── main.py               # FastAPI entry point
+│   ├── video_stream.py       # OpenCV capture & frame extraction
+│   ├── model/
+│   │   ├── train.py          # Training script
+│   │   ├── predict.py        # Inference pipeline
+│   │   └── weights/          # Saved model weights (.pt / .h5)
+│   ├── alerts.py             # Alert logic (threshold, cooldown, notification)
+│   ├── database.py           # SQLite models & queries
+│   └── requirements.txt
+├── frontend/
+│   ├── index.html            # Dashboard page
+│   ├── style.css             # Styling
+│   └── app.js                # WebSocket client, chart rendering
+├── data/
+│   ├── raw/                  # Raw video clips for training
+│   └── processed/            # Extracted & labeled frames
+├── notebooks/
+│   └── exploration.ipynb     # EDA & model prototyping
+├── tests/
+│   ├── test_predict.py
+│   └── test_alerts.py
+├── docker-compose.yml
+├── Dockerfile
+└── README.md
+```
+
+---
+
+## Implementation Roadmap
+
+### Phase 1 — Data & Model (ML Core)
+
+1. **Dataset acquisition** — Use public violence-detection datasets (e.g., *RWF-2000*, *Hockey Fight*, *Real Life Violence Situations*).
+2. **Preprocessing** — Extract frames (OpenCV), resize to 224×224, normalize, apply augmentation.
+3. **Model selection & training**
+   - Option A: **MobileNetV2 (feature extractor) → LSTM** — lightweight, good for edge deployment.
+   - Option B: **3D-CNN (R3D-18 / SlowFast)** — captures temporal info natively.
+4. **Evaluation** — Accuracy, precision, recall, F1, confusion matrix on a held-out test set.
+5. **Export** — Save best weights to `model/weights/`.
+
+### Phase 2 — Backend API
+
+1. **FastAPI application** with endpoints:
+   - `POST /upload` — upload a video file for offline analysis.
+   - `WS /ws/live` — WebSocket for real-time camera streaming.
+   - `GET /incidents` — retrieve logged incidents.
+2. **Video pipeline** (`video_stream.py`) — capture frames from webcam or RTSP URL with OpenCV.
+3. **Inference pipeline** (`predict.py`) — batch frames into clips, run model, return score.
+4. **Alert engine** (`alerts.py`) — if score > threshold for *N* consecutive windows → log incident, push WebSocket alert.
+
+### Phase 3 — Frontend Dashboard
+
+1. **Live feed** — render video frames streamed over WebSocket on a `<canvas>`.
+2. **Alert panel** — real-time toast/banner when aggression detected, with timestamp & confidence.
+3. **Incident log** — table/timeline of past detections pulled from `/incidents`.
+4. **Analytics** — simple charts (detection count over time) using Chart.js or vanilla `<canvas>`.
+5. **Premium UI** — dark theme, glassmorphism cards, smooth animations, status indicators.
+
+### Phase 4 — Integration & Deployment
+
+1. **Dockerize** backend + frontend.
+2. **End-to-end test** — feed a known violent clip → verify detection → verify alert on dashboard.
+3. **Optional:** add email/SMS notifications, multi-camera support, RTSP input.
+
+---
+
+## Verification Plan
+
+### Automated Tests
+- `pytest tests/test_predict.py` — unit tests for the inference pipeline (mock model, assert output shape & type).
+- `pytest tests/test_alerts.py` — unit tests for alert threshold logic.
+
+### Browser / Manual Verification
+- Start backend (`uvicorn backend.main:app --reload`), open dashboard in browser, enable webcam → verify live feed renders.
+- Play a known violent clip through the upload endpoint → verify an incident appears in the dashboard log.
+- *(We will refine these once the first working prototype is up.)*
+
+---
+
+## Questions for You
+
+> [!IMPORTANT]
+> Before I start coding, a few decisions that will shape the project:
+
+1. **Model preference** — Do you prefer **MobileNetV2 + LSTM** (lighter, easier to train) or a **3D-CNN like R3D/SlowFast** (heavier, potentially more accurate)?
+2. **Video source** — Should we start with **webcam** input, **uploaded video files**, or both?
+3. **Dataset** — Do you already have a dataset, or should we plan to download a public one (e.g., RWF-2000)?
+4. **Scope for V1** — Should we build the full pipeline end-to-end first (even if basic), or focus on perfecting the ML model before building the web layer?
+5. **Notifications** — Beyond the dashboard, do you want email/SMS alerts in V1?

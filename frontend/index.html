@@ -1,0 +1,1411 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ALERTVISION — Security AI Dashboard</title>
+  <meta name="description"
+    content="ALERTVISION real-time AI-powered security monitoring dashboard for threat detection and incident management." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+  <div class="app-layout">
+
+    <!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+            <path d="M12 2L4 6v6c0 5.1 3.4 9.8 8 11 4.6-1.2 8-5.9 8-11V6L12 2z" fill="currentColor" />
+          </svg>
+        </div>
+        <div class="logo-text">
+          <h1>ALERTVISION</h1>
+          <span>SECURITY AI</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a class="nav-item active" href="#" data-page="dashboard" id="nav-dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="7" height="7" rx="1" />
+          </svg>
+          <span>Dashboard</span>
+        </a>
+        <a class="nav-item" href="#" data-page="livefeeds" id="nav-livefeeds">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4M3.5 3.5a13 13 0 0 0 0 17M20.5 3.5a13 13 0 0 1 0 17" />
+          </svg>
+          <span>Live Feeds</span>
+        </a>
+        <a class="nav-item" href="#" data-page="incidents" id="nav-incidents">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M10.3 3.3L4 12h8l-2.3 8.7L20 12h-8l2.3-8.7z" />
+          </svg>
+          <span>Incidents</span>
+        </a>
+        <a class="nav-item" href="#" data-page="analytics" id="nav-analytics">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <line x1="18" y1="20" x2="18" y2="10" />
+            <line x1="12" y1="20" x2="12" y2="4" />
+            <line x1="6" y1="20" x2="6" y2="14" />
+          </svg>
+          <span>Analytics</span>
+        </a>
+        <a class="nav-item" href="#" data-page="settings" id="nav-settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- ═══════════════════ MAIN CONTENT ═══════════════════ -->
+    <main class="main-content">
+
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <div class="top-bar-time" id="topTime"></div>
+          <div class="top-bar-date" id="topDate"></div>
+        </div>
+        <div class="top-bar-right">
+          <div class="connection-badge" id="connectionBadge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+              <path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01" />
+            </svg>
+            CONNECTED
+          </div>
+          <button class="bell-btn" id="bellBtn" title="Notifications">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <span class="bell-dot"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- ════════════ DASHBOARD PAGE ════════════ -->
+      <section class="page-section active" id="page-dashboard">
+        <div class="page-content">
+          <div class="page-header">
+            <div class="page-title">Dashboard</div>
+            <div class="page-subtitle">Real-time security monitoring overview</div>
+          </div>
+
+          <div class="stats-row" id="dashStats">
+            <div class="stat-card">
+              <div class="stat-label">TOTAL INCIDENTS</div>
+              <div class="stat-value white" id="stat-total">21</div>
+              <div class="stat-desc">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                  <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                  <polyline points="16 7 22 7 22 13" />
+                </svg>
+                Last 24 hours
+              </div>
+              <div class="stat-icon neutral-bg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                </svg>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">CRITICAL ALERTS</div>
+              <div class="stat-value red" id="stat-critical">7</div>
+              <div class="stat-desc red-text">Requires immediate attention</div>
+              <div class="stat-icon red-bg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+                  <path d="M10.3 3.3L4 12h8l-2.3 8.7L20 12h-8l2.3-8.7z" stroke="none" fill="currentColor" />
+                </svg>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">WARNINGS</div>
+              <div class="stat-value yellow" id="stat-warnings">7</div>
+              <div class="stat-desc yellow-text">Monitor closely</div>
+              <div class="stat-icon yellow-bg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                  <line x1="12" y1="9" x2="12" y2="13" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">SAFE EVENTS</div>
+              <div class="stat-value green" id="stat-safe">7</div>
+              <div class="stat-desc green-text">No action required</div>
+              <div class="stat-icon green-bg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+                  <path d="M12 2L4 6v6c0 5.1 3.4 9.8 8 11 4.6-1.2 8-5.9 8-11V6L12 2z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="dashboard-feeds-col">
+              <div class="section-header">
+                <div class="section-title">Live Feeds</div>
+                <a class="section-link" href="#" data-page="livefeeds">View All <svg viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" width="12" height="12">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg></a>
+              </div>
+              <div class="feeds-grid">
+                <div class="feed-card">
+                  <div class="feed-video">
+                    <img src="https://picsum.photos/seed/sec1/800/450" alt="CAM-01 Main Entrance">
+                    <div class="feed-overlay">
+                      <div class="live-badge"><span class="live-dot"></span>LIVE</div>
+                      <div class="cam-label">CAM-01</div>
+                    </div>
+                    <div class="feed-time-overlay" id="feedTime1"></div>
+                    <div class="feed-bottom-bar">
+                      <div>
+                        <div class="feed-location">Main Entrance</div>
+                        <div class="feed-sublocation">Building A — Ground Floor</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="feed-card">
+                  <div class="feed-video">
+                    <img src="https://picsum.photos/seed/sec2/800/450" alt="CAM-02 Parking Lot A">
+                    <div class="feed-overlay">
+                      <div class="live-badge"><span class="live-dot"></span>LIVE</div>
+                      <div class="cam-label">CAM-02</div>
+                    </div>
+                    <div class="feed-time-overlay" id="feedTime2"></div>
+                    <div class="feed-bottom-bar">
+                      <div>
+                        <div class="feed-location">Parking Lot A</div>
+                        <div class="feed-sublocation">Outdoor — North Side</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <aside class="alerts-panel">
+              <div class="section-header">
+                <div class="section-title">Recent Alerts</div>
+                <a class="section-link" href="#" data-page="incidents">View All <svg viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" width="12" height="12">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg></a>
+              </div>
+              <div class="alerts-list" id="recentAlertsList">
+                <!-- populated by JS -->
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════════ LIVE FEEDS PAGE ════════════ -->
+      <section class="page-section" id="page-livefeeds">
+        <div class="page-content">
+          <div class="page-header">
+            <div class="page-title">Live Feeds</div>
+            <div class="page-subtitle">Real-time camera monitoring</div>
+          </div>
+
+          <div class="feeds-controls-bar">
+            <div class="feeds-filter-group">
+              <button class="filter-btn active" data-filter="all">All Cameras</button>
+              <button class="filter-btn" data-filter="alert">Alert Active</button>
+              <button class="filter-btn" data-filter="safe">Safe</button>
+            </div>
+            <div class="feeds-info">
+              <div class="connection-dot"></div>
+              <span>4 cameras online</span>
+            </div>
+          </div>
+
+          <div class="feeds-page-grid">
+            <div class="feed-card-large">
+              <div class="feed-video">
+                <img src="https://picsum.photos/seed/sec1/900/500" alt="Main Entrance">
+                <div class="feed-overlay">
+                  <div class="live-badge"><span class="live-dot"></span>LIVE</div>
+                  <div class="cam-label">CAM-01</div>
+                </div>
+                <div class="feed-time-overlay" id="feedTimeLg1"></div>
+                <div class="feed-status-bar safe-bar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                    <path d="M12 2L4 6v6c0 5.1 3.4 9.8 8 11 4.6-1.2 8-5.9 8-11V6L12 2z" fill="currentColor" />
+                  </svg>
+                  <span>SAFE — 95.0%</span>
+                </div>
+                <div class="feed-bottom-bar">
+                  <div>
+                    <div class="feed-location">Main Entrance</div>
+                    <div class="feed-sublocation">Building A — Ground Floor</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="feed-card-large">
+              <div class="feed-video">
+                <img src="https://picsum.photos/seed/sec2/900/500" alt="Parking Lot A">
+                <div class="feed-overlay">
+                  <div class="live-badge alert-live"><span class="live-dot"></span>LIVE</div>
+                  <div class="cam-label">CAM-02</div>
+                </div>
+                <div class="feed-time-overlay" id="feedTimeLg2"></div>
+                <div class="feed-status-bar critical-bar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                    <path d="M10.3 3.3L4 12h8l-2.3 8.7L20 12h-8l2.3-8.7z" fill="currentColor" />
+                  </svg>
+                  <span>CRITICAL — 92.6%</span>
+                </div>
+                <div class="feed-bottom-bar">
+                  <div>
+                    <div class="feed-location">Parking Lot A</div>
+                    <div class="feed-sublocation">Outdoor — North Side</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="feed-card-large">
+              <div class="feed-video">
+                <img src="https://picsum.photos/seed/sec3/900/500" alt="Rear Exit">
+                <div class="feed-overlay">
+                  <div class="live-badge"><span class="live-dot"></span>LIVE</div>
+                  <div class="cam-label">CAM-03</div>
+                </div>
+                <div class="feed-time-overlay" id="feedTimeLg3"></div>
+                <div class="feed-status-bar safe-bar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                    <path d="M12 2L4 6v6c0 5.1 3.4 9.8 8 11 4.6-1.2 8-5.9 8-11V6L12 2z" fill="currentColor" />
+                  </svg>
+                  <span>SAFE — 97.2%</span>
+                </div>
+                <div class="feed-bottom-bar">
+                  <div>
+                    <div class="feed-location">Rear Exit</div>
+                    <div class="feed-sublocation">Building B — Level 1</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="feed-card-large">
+              <div class="feed-video">
+                <img src="https://picsum.photos/seed/sec5/900/500" alt="Delivery Bay">
+                <div class="feed-overlay">
+                  <div class="live-badge alert-live-warn"><span class="live-dot"></span>LIVE</div>
+                  <div class="cam-label">CAM-05</div>
+                </div>
+                <div class="feed-time-overlay" id="feedTimeLg4"></div>
+                <div class="feed-status-bar warning-bar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+                      fill="currentColor" />
+                  </svg>
+                  <span>WARNING — 78.3%</span>
+                </div>
+                <div class="feed-bottom-bar">
+                  <div>
+                    <div class="feed-location">Delivery Bay</div>
+                    <div class="feed-sublocation">Loading Dock — East</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── LIVE WEBCAM SECTION ───────────────── -->
+          <div class="webcam-section">
+            <div class="section-header">
+              <div class="section-title">Live Webcam Analysis</div>
+              <div class="webcam-status" id="webcamStatus">Camera Offline</div>
+            </div>
+            <div class="webcam-wrapper">
+              <div class="webcam-feed-container" id="webcamContainer">
+                <video id="webcamVideo" autoplay muted playsinline></video>
+                <canvas id="webcamCanvas"></canvas>
+                <div class="webcam-placeholder" id="webcamPlaceholder">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+                    <path d="M23 7l-7 5 7 5V7z" />
+                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                  </svg>
+                  <p>Click Start Camera to begin real-time analysis</p>
+                </div>
+                <div class="webcam-overlay-info" id="webcamOverlay" style="display:none;">
+                  <div class="webcam-state-badge" id="webcamStateBadge">SAFE</div>
+                  <div class="webcam-conf" id="webcamConf">0%</div>
+                </div>
+              </div>
+              <div class="webcam-controls">
+                <button class="btn btn-primary" id="btnStartCam" onclick="startWebcam()">Start Camera</button>
+                <button class="btn" id="btnStopCam" onclick="stopWebcam()" disabled>Stop Camera</button>
+                <div class="webcam-desc-live" id="webcamDesc">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── VIDEO UPLOAD SECTION ──────────────── -->
+          <div class="upload-section">
+            <div class="section-header">
+              <div class="section-title">Upload Video for Analysis</div>
+            </div>
+            <div class="upload-dropzone" id="uploadDropzone"
+              onclick="document.getElementById('videoFileInput').click()">
+              <input type="file" id="videoFileInput" accept="video/*" style="display:none"
+                onchange="handleVideoUpload(this.files[0])">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              <p>Drop a video file here or <strong>click to browse</strong></p>
+              <span>Supports MP4, AVI, MOV — max 100 MB</span>
+            </div>
+            <div class="upload-progress-wrap" id="uploadProgressWrap" style="display:none;">
+              <div class="upload-progress-bar">
+                <div class="upload-progress-fill" id="uploadProgressFill"></div>
+              </div>
+              <div class="upload-progress-text" id="uploadProgressText">Uploading...</div>
+            </div>
+            <div class="upload-results" id="uploadResults" style="display:none;">
+              <div class="upload-results-header">
+                <div class="section-title">Analysis Results</div>
+                <div class="upload-summary" id="uploadSummary"></div>
+              </div>
+              <div class="results-gallery" id="resultsGallery"></div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ════════════ INCIDENTS PAGE ════════════ -->
+      <section class="page-section" id="page-incidents">
+        <div class="page-content">
+          <div class="page-header-row">
+            <div>
+              <div class="page-title">Incidents</div>
+              <div class="page-subtitle">Detected security events log</div>
+            </div>
+            <div class="incidents-controls">
+              <div class="search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input type="text" placeholder="Search incidents..." id="incidentSearch">
+              </div>
+              <div class="filter-dropdown">
+                <select id="incidentFilter">
+                  <option value="all">All Status</option>
+                  <option value="aggressive">Critical</option>
+                  <option value="suspicious">Warning</option>
+                  <option value="normal">Safe</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="incidents-table-wrap">
+            <div class="incidents-table">
+              <div class="table-header">
+                <div>ID</div>
+                <div>TIME</div>
+                <div>CAMERA</div>
+                <div>DESCRIPTION</div>
+                <div>CONFIDENCE</div>
+                <div>STATUS</div>
+              </div>
+              <div id="incidentTableBody">
+                <!-- populated by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════════ ANALYTICS PAGE ════════════ -->
+      <section class="page-section" id="page-analytics">
+        <div class="page-content">
+          <div class="page-header">
+            <div class="page-title">Analytics</div>
+            <div class="page-subtitle">Security metrics and incident analysis</div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-label">TOTAL INCIDENTS</div>
+              <div class="stat-value white" id="an-total">21</div>
+              <div class="stat-desc">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                  <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                  <polyline points="16 7 22 7 22 13" />
+                </svg>
+                Last 24 hours
+              </div>
+              <div class="stat-icon neutral-bg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                </svg>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">CRITICAL ALERTS</div>
+              <div class="stat-value red" id="an-critical">7</div>
+              <div class="stat-desc red-text">Last 24 hours</div>
+              <div class="stat-icon red-bg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+                  <path d="M10.3 3.3L4 12h8l-2.3 8.7L20 12h-8l2.3-8.7z" stroke="none" fill="currentColor" />
+                </svg>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">WARNINGS</div>
+              <div class="stat-value yellow" id="an-warnings">7</div>
+              <div class="stat-desc yellow-text">Last 24 hours</div>
+              <div class="stat-icon yellow-bg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                </svg>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">SAFE EVENTS</div>
+              <div class="stat-value green" id="an-safe">7</div>
+              <div class="stat-desc green-text">Last 24 hours</div>
+              <div class="stat-icon green-bg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+                  <path d="M12 2L4 6v6c0 5.1 3.4 9.8 8 11 4.6-1.2 8-5.9 8-11V6L12 2z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="analytics-grid">
+            <div class="chart-card">
+              <div class="chart-header">
+                <div class="chart-title">Hourly Activity</div>
+                <div class="chart-period">LAST 24 HOURS</div>
+              </div>
+              <div class="chart-container" style="height:260px;">
+                <canvas id="hourlyChart"></canvas>
+              </div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-header">
+                <div class="chart-title">Threat Distribution</div>
+                <div class="chart-period">ALL TIME</div>
+              </div>
+              <div class="chart-container donut-container" style="height:260px;">
+                <canvas id="donutChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-card" style="margin-top:20px;">
+            <div class="chart-header">
+              <div class="chart-title">Detection Confidence Trend</div>
+              <div class="chart-period">LAST 12 HOURS</div>
+            </div>
+            <div class="chart-container" style="height:200px;">
+              <canvas id="confidenceChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════════ SETTINGS PAGE ════════════ -->
+      <section class="page-section" id="page-settings">
+        <div class="page-content">
+          <div class="page-header">
+            <div class="page-title">Settings</div>
+            <div class="page-subtitle">Configure cameras and system preferences</div>
+          </div>
+
+          <div class="settings-tabs" role="tablist">
+            <button class="settings-tab active" data-tab="cameras" id="tab-cameras">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14">
+                <path d="M23 7l-7 5 7 5V7z" />
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+              </svg>
+              Cameras
+            </button>
+            <button class="settings-tab" data-tab="notifications" id="tab-notifications">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+              </svg>
+              Notifications
+            </button>
+            <button class="settings-tab" data-tab="system" id="tab-system">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14">
+                <line x1="18" y1="20" x2="18" y2="10" />
+                <line x1="12" y1="20" x2="12" y2="4" />
+                <line x1="6" y1="20" x2="6" y2="14" />
+              </svg>
+              System
+            </button>
+          </div>
+
+          <!-- Cameras Tab -->
+          <div class="settings-tab-content active" id="settingsTab-cameras">
+            <div class="settings-section">
+              <div class="settings-section-title">Camera Configuration</div>
+              <div class="camera-settings-list">
+                <div class="camera-setting-row">
+                  <div class="camera-setting-info">
+                    <div class="cam-badge">CAM-01</div>
+                    <div>
+                      <div class="cam-setting-name">Main Entrance</div>
+                      <div class="cam-setting-detail">Building A — Ground Floor</div>
+                    </div>
+                  </div>
+                  <div class="camera-setting-controls">
+                    <span class="status-pill online">Online</span>
+                    <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                  </div>
+                </div>
+                <div class="camera-setting-row">
+                  <div class="camera-setting-info">
+                    <div class="cam-badge">CAM-02</div>
+                    <div>
+                      <div class="cam-setting-name">Parking Lot A</div>
+                      <div class="cam-setting-detail">Outdoor — North Side</div>
+                    </div>
+                  </div>
+                  <div class="camera-setting-controls">
+                    <span class="status-pill online">Online</span>
+                    <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                  </div>
+                </div>
+                <div class="camera-setting-row">
+                  <div class="camera-setting-info">
+                    <div class="cam-badge">CAM-03</div>
+                    <div>
+                      <div class="cam-setting-name">Rear Exit</div>
+                      <div class="cam-setting-detail">Building B — Level 1</div>
+                    </div>
+                  </div>
+                  <div class="camera-setting-controls">
+                    <span class="status-pill online">Online</span>
+                    <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                  </div>
+                </div>
+                <div class="camera-setting-row">
+                  <div class="camera-setting-info">
+                    <div class="cam-badge">CAM-04</div>
+                    <div>
+                      <div class="cam-setting-name">Reception Area</div>
+                      <div class="cam-setting-detail">Building A — Lobby</div>
+                    </div>
+                  </div>
+                  <div class="camera-setting-controls">
+                    <span class="status-pill offline">Offline</span>
+                    <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <div class="settings-section-title">Detection Thresholds</div>
+              <div class="threshold-grid">
+                <div class="threshold-item">
+                  <div class="threshold-label">Confidence Threshold</div>
+                  <div class="threshold-slider-row">
+                    <input type="range" min="0" max="100" value="60" class="range-slider" id="confThreshold">
+                    <span class="threshold-val" id="confVal">60%</span>
+                  </div>
+                  <div class="threshold-desc">Minimum confidence to flag as suspicious</div>
+                </div>
+                <div class="threshold-item">
+                  <div class="threshold-label">Aggression Threshold</div>
+                  <div class="threshold-slider-row">
+                    <input type="range" min="0" max="100" value="85" class="range-slider" id="aggrThreshold">
+                    <span class="threshold-val" id="aggrVal">85%</span>
+                  </div>
+                  <div class="threshold-desc">Minimum confidence to flag as aggressive</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notifications Tab -->
+          <div class="settings-tab-content" id="settingsTab-notifications">
+            <div class="settings-section">
+              <div class="settings-section-title">Alert Notifications</div>
+              <div class="notif-list">
+                <div class="notif-row">
+                  <div>
+                    <div class="notif-title">Critical Alerts</div>
+                    <div class="notif-desc">Immediate notifications for aggressive incidents</div>
+                  </div>
+                  <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                </div>
+                <div class="notif-row">
+                  <div>
+                    <div class="notif-title">Warning Alerts</div>
+                    <div class="notif-desc">Notifications for suspicious activity</div>
+                  </div>
+                  <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                </div>
+                <div class="notif-row">
+                  <div>
+                    <div class="notif-title">System Status</div>
+                    <div class="notif-desc">Camera connection and system health alerts</div>
+                  </div>
+                  <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+                </div>
+                <div class="notif-row">
+                  <div>
+                    <div class="notif-title">Daily Reports</div>
+                    <div class="notif-desc">Automated daily security summary</div>
+                  </div>
+                  <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- System Tab -->
+          <div class="settings-tab-content" id="settingsTab-system">
+            <div class="settings-section">
+              <div class="settings-section-title">System Information</div>
+              <div class="settings-grid">
+                <div class="setting-item">
+                  <div class="setting-item-label">SYSTEM VERSION</div>
+                  <div class="setting-item-value" id="sysVersion">1.0.0</div>
+                </div>
+                <div class="setting-item">
+                  <div class="setting-item-label">AI MODEL</div>
+                  <div class="setting-item-value" id="sysModel">Gemini 2.0 Flash</div>
+                </div>
+                <div class="setting-item">
+                  <div class="setting-item-label">API STATUS</div>
+                  <div class="setting-item-value green">
+                    <span class="inline-dot green-dot"></span>Connected
+                  </div>
+                </div>
+                <div class="setting-item">
+                  <div class="setting-item-label">ACTIVE CAMERAS</div>
+                  <div class="setting-item-value" id="sysCameras">4</div>
+                </div>
+              </div>
+            </div>
+            <div class="settings-section">
+              <div class="settings-section-title">About ALERTVISION</div>
+              <p class="about-text">ALERTVISION is a real-time aggression detection system powered by advanced AI. It
+                analyzes video feeds and images to detect potential threats, aggressive behavior, and security incidents
+                in real-time.</p>
+              <div class="powered-by">
+                <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
+                  <path d="M12 2L4 6v6c0 5.1 3.4 9.8 8 11 4.6-1.2 8-5.9 8-11V6L12 2z" fill="#ef4444" />
+                </svg>
+                Powered by Gemini 2.0 Flash Vision AI
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // ═══════════════════════════════════════
+    //   ALERTVISION — Dashboard JavaScript
+    // ═══════════════════════════════════════
+
+    // ── Sample incident data ─────────────────────────────────
+    const INCIDENTS = [
+      { id: 1, camera: 'CAM-02', status: 'aggressive', confidence: 0.926, description: 'Physical altercation in progress between two individuals', time: '11:46', timestamp: new Date(Date.now() - 240000) },
+      { id: 2, camera: 'CAM-03', status: 'normal', confidence: 0.950, description: 'Normal activity - no threats detected', time: '11:46', timestamp: new Date(Date.now() - 260000) },
+      { id: 3, camera: 'CAM-05', status: 'suspicious', confidence: 0.783, description: 'Loitering detected near delivery bay', time: '11:42', timestamp: new Date(Date.now() - 500000) },
+      { id: 4, camera: 'CAM-01', status: 'normal', confidence: 0.911, description: 'Normal foot traffic at main entrance', time: '11:38', timestamp: new Date(Date.now() - 720000) },
+      { id: 5, camera: 'CAM-02', status: 'aggressive', confidence: 0.871, description: 'Threatening gestures detected', time: '11:30', timestamp: new Date(Date.now() - 1200000) },
+      { id: 6, camera: 'CAM-01', status: 'suspicious', confidence: 0.694, description: 'Unattended bag left near entrance', time: '11:22', timestamp: new Date(Date.now() - 1680000) },
+      { id: 7, camera: 'CAM-03', status: 'normal', confidence: 0.988, description: 'Staff movement, no concerns', time: '11:15', timestamp: new Date(Date.now() - 2100000) },
+      { id: 8, camera: 'CAM-05', status: 'aggressive', confidence: 0.903, description: 'Crowd disturbance at loading dock', time: '11:08', timestamp: new Date(Date.now() - 2520000) },
+      { id: 9, camera: 'CAM-02', status: 'normal', confidence: 0.965, description: 'Normal parking activity', time: '10:58', timestamp: new Date(Date.now() - 3120000) },
+      { id: 10, camera: 'CAM-01', status: 'suspicious', confidence: 0.712, description: 'Tailgating detected at security door', time: '10:45', timestamp: new Date(Date.now() - 3900000) },
+      { id: 11, camera: 'CAM-03', status: 'aggressive', confidence: 0.932, description: 'Verbal altercation escalating', time: '10:30', timestamp: new Date(Date.now() - 4800000) },
+      { id: 12, camera: 'CAM-05', status: 'normal', confidence: 0.944, description: 'Routine delivery, authorized', time: '10:15', timestamp: new Date(Date.now() - 5700000) },
+    ];
+
+    // ── Statistics ───────────────────────────────────────────
+    function getStats() {
+      return {
+        total: INCIDENTS.length,
+        critical: INCIDENTS.filter(i => i.status === 'aggressive').length,
+        warnings: INCIDENTS.filter(i => i.status === 'suspicious').length,
+        safe: INCIDENTS.filter(i => i.status === 'normal').length
+      };
+    }
+
+    function updateStats() {
+      const s = getStats();
+      ['stat-total', 'an-total'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = s.total; });
+      ['stat-critical', 'an-critical'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = s.critical; });
+      ['stat-warnings', 'an-warnings'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = s.warnings; });
+      ['stat-safe', 'an-safe'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = s.safe; });
+    }
+
+    // ── Clock ────────────────────────────────────────────────
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function updateClock() {
+      const d = new Date();
+      const timeStr = [pad(d.getHours()), pad(d.getMinutes()), pad(d.getSeconds())].join(':');
+      const dateStr = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear();
+      const topTime = document.getElementById('topTime');
+      const topDate = document.getElementById('topDate');
+      if (topTime) topTime.textContent = timeStr;
+      if (topDate) topDate.textContent = dateStr;
+      // Feed overlays
+      ['feedTime1', 'feedTime2', 'feedTimeLg1', 'feedTimeLg2', 'feedTimeLg3', 'feedTimeLg4'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = timeStr;
+      });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // ── Navigation ───────────────────────────────────────────
+    function navigateTo(page) {
+      document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      const section = document.getElementById('page-' + page);
+      const navLink = document.getElementById('nav-' + page);
+      if (section) section.classList.add('active');
+      if (navLink) navLink.classList.add('active');
+      if (page === 'analytics') initCharts();
+      if (page === 'incidents') renderIncidentTable(INCIDENTS);
+      if (page === 'dashboard') renderRecentAlerts();
+    }
+
+    document.querySelectorAll('[data-page]').forEach(el => {
+      el.addEventListener('click', e => {
+        e.preventDefault();
+        navigateTo(el.dataset.page);
+      });
+    });
+
+    // ── Recent Alerts ────────────────────────────────────────
+    function statusMeta(status) {
+      if (status === 'aggressive') return { cls: 'critical', label: 'CRITICAL' };
+      if (status === 'suspicious') return { cls: 'warning', label: 'WARNING' };
+      return { cls: 'safe', label: 'SAFE' };
+    }
+
+    function alertIconSVG(status) {
+      if (status === 'aggressive') return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="currentColor"/></svg>`;
+      if (status === 'suspicious') return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2L4 6v6c0 5.1 3.4 9.8 8 11 4.6-1.2 8-5.9 8-11V6L12 2z" fill="currentColor"/></svg>`;
+    }
+
+    function renderRecentAlerts() {
+      const container = document.getElementById('recentAlertsList');
+      if (!container) return;
+      const recent = INCIDENTS.slice(0, 5);
+      container.innerHTML = recent.map(inc => {
+        const m = statusMeta(inc.status);
+        return `<div class="alert-item animate-in">
+        <div class="alert-icon ${m.cls}">${alertIconSVG(inc.status)}</div>
+        <div class="alert-content">
+          <div class="alert-badges">
+            <div class="alert-type-badge ${m.cls}">${m.label}</div>
+            <div class="alert-confidence">${(inc.confidence * 100).toFixed(1)}%</div>
+          </div>
+          <div class="alert-desc">${inc.description}</div>
+          <div class="alert-meta">
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="11" height="11"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              ${inc.camera}
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="11" height="11"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              ${inc.time}
+            </span>
+          </div>
+        </div>
+      </div>`;
+      }).join('');
+    }
+
+    // ── Incidents Table ──────────────────────────────────────
+    function renderIncidentTable(data) {
+      const body = document.getElementById('incidentTableBody');
+      if (!body) return;
+      body.innerHTML = data.map(inc => {
+        const m = statusMeta(inc.status);
+        return `<div class="table-row">
+        <div class="td mono">#${String(inc.id).padStart(3, '0')}</div>
+        <div class="td mono time-cell">${inc.time}</div>
+        <div class="td cam-cell">${inc.camera}</div>
+        <div class="td desc-cell">${inc.description}</div>
+        <div class="td conf-cell">
+          <div class="conf-bar-wrap">
+            <div class="conf-bar-fill ${m.cls}" style="width:${(inc.confidence * 100).toFixed(0)}%"></div>
+          </div>
+          <span class="mono">${(inc.confidence * 100).toFixed(1)}%</span>
+        </div>
+        <div class="td"><span class="status-tag ${m.cls}">${m.label}</span></div>
+      </div>`;
+      }).join('');
+    }
+
+    document.getElementById('incidentSearch')?.addEventListener('input', e => {
+      const q = e.target.value.toLowerCase();
+      const f = document.getElementById('incidentFilter').value;
+      filterIncidents(q, f);
+    });
+    document.getElementById('incidentFilter')?.addEventListener('change', e => {
+      const q = document.getElementById('incidentSearch').value.toLowerCase();
+      filterIncidents(q, e.target.value);
+    });
+
+    function filterIncidents(q, status) {
+      let data = INCIDENTS;
+      if (status !== 'all') data = data.filter(i => i.status === status);
+      if (q) data = data.filter(i => i.description.toLowerCase().includes(q) || i.camera.toLowerCase().includes(q));
+      renderIncidentTable(data);
+    }
+
+    // ── Charts ───────────────────────────────────────────────
+    let chartsInit = false;
+    function initCharts() {
+      if (chartsInit) return;
+      chartsInit = true;
+
+      // Hourly activity (line/area chart)
+      const hourlyCtx = document.getElementById('hourlyChart').getContext('2d');
+      const hours = ['01:00', '03:00', '05:00', '07:00', '09:00', '11:00', '13:00', '15:00', '17:00', '19:00', '21:00', '23:00'];
+      const vals = [0.2, 0.1, 0.4, 1.8, 1.2, 0.9, 1.5, 2.0, 1.8, 1.4, 0.8, 0.3];
+
+      const gradient = hourlyCtx.createLinearGradient(0, 0, 0, 260);
+      gradient.addColorStop(0, 'rgba(239,68,68,0.4)');
+      gradient.addColorStop(1, 'rgba(239,68,68,0.01)');
+
+      new Chart(hourlyCtx, {
+        type: 'line',
+        data: {
+          labels: hours,
+          datasets: [{
+            label: 'Incidents',
+            data: vals,
+            borderColor: '#ef4444',
+            backgroundColor: gradient,
+            borderWidth: 2,
+            pointRadius: 3,
+            pointBackgroundColor: '#ef4444',
+            pointBorderColor: '#0a0b0e',
+            pointBorderWidth: 2,
+            fill: true,
+            tension: 0.3,
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }, tooltip: {
+              backgroundColor: '#161921', borderColor: '#252836', borderWidth: 1,
+              titleColor: '#9aa0b0', bodyColor: '#e8eaed',
+              callbacks: { label: ctx => ` ${ctx.parsed.y} incidents` }
+            }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5c6270', font: { family: 'JetBrains Mono', size: 10 } } },
+            y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5c6270', font: { family: 'JetBrains Mono', size: 10 } }, min: 0 }
+          }
+        }
+      });
+
+      // Donut chart
+      const donutCtx = document.getElementById('donutChart').getContext('2d');
+      const stats = getStats();
+      new Chart(donutCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Critical', 'Warning', 'Safe'],
+          datasets: [{
+            data: [stats.critical, stats.warnings, stats.safe],
+            backgroundColor: ['#ef4444', '#f59e0b', '#22c55e'],
+            borderColor: '#0a0b0e',
+            borderWidth: 3,
+            hoverBorderColor: '#161921',
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          cutout: '70%',
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: {
+                color: '#9aa0b0', padding: 18, font: { family: 'Inter', size: 12 },
+                usePointStyle: true, pointStyleWidth: 8
+              }
+            },
+            tooltip: {
+              backgroundColor: '#161921', borderColor: '#252836', borderWidth: 1,
+              titleColor: '#9aa0b0', bodyColor: '#e8eaed'
+            }
+          }
+        }
+      });
+
+      // Confidence trend (bar chart)
+      const confCtx = document.getElementById('confidenceChart').getContext('2d');
+      const confHours = ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00'];
+      new Chart(confCtx, {
+        type: 'bar',
+        data: {
+          labels: confHours,
+          datasets: [
+            {
+              label: 'Avg Confidence',
+              data: [0.72, 0.65, 0.80, 0.91, 0.88, 0.76, 0.93, 0.87, 0.90, 0.85, 0.92, 0.94],
+              backgroundColor: 'rgba(239,68,68,0.6)',
+              borderColor: '#ef4444',
+              borderWidth: 1,
+              borderRadius: 4,
+            }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }, tooltip: {
+              backgroundColor: '#161921', borderColor: '#252836', borderWidth: 1,
+              titleColor: '#9aa0b0', bodyColor: '#e8eaed',
+              callbacks: { label: ctx => ` ${(ctx.parsed.y * 100).toFixed(0)}%` }
+            }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5c6270', font: { family: 'JetBrains Mono', size: 10 } } },
+            y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5c6270', font: { family: 'JetBrains Mono', size: 10 }, callback: v => (v * 100) + '%' }, min: 0, max: 1 }
+          }
+        }
+      });
+    }
+
+    // ── Settings Tabs ────────────────────────────────────────
+    document.querySelectorAll('.settings-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.settings-tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        const content = document.getElementById('settingsTab-' + tab.dataset.tab);
+        if (content) content.classList.add('active');
+      });
+    });
+
+    // ── Range sliders ────────────────────────────────────────
+    document.getElementById('confThreshold')?.addEventListener('input', e => {
+      document.getElementById('confVal').textContent = e.target.value + '%';
+    });
+    document.getElementById('aggrThreshold')?.addEventListener('input', e => {
+      document.getElementById('aggrVal').textContent = e.target.value + '%';
+    });
+
+    // ── Load system info from API ────────────────────────────
+    async function loadSystemInfo() {
+      try {
+        const r = await fetch('/api/system');
+        if (!r.ok) return;
+        const data = await r.json();
+        if (data.version) document.getElementById('sysVersion').textContent = data.version;
+        if (data.ai_model) document.getElementById('sysModel').textContent = data.ai_model;
+        if (data.active_cameras !== undefined) document.getElementById('sysCameras').textContent = data.active_cameras;
+      } catch { }
+    }
+
+    async function loadApiStats() {
+      try {
+        const r = await fetch('/api/stats');
+        if (!r.ok) return;
+        const data = await r.json();
+        if (data.total_incidents !== undefined) {
+          ['stat-total', 'an-total'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = data.total_incidents; });
+          ['stat-critical', 'an-critical'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = data.critical_alerts; });
+          ['stat-warnings', 'an-warnings'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = data.warnings; });
+          ['stat-safe', 'an-safe'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = data.safe_events; });
+        }
+      } catch { }
+    }
+
+    // ── Bell animation ───────────────────────────────────────
+    document.getElementById('bellBtn')?.addEventListener('click', () => {
+      const bell = document.getElementById('bellBtn');
+      bell.classList.add('bell-ring');
+      setTimeout(() => bell.classList.remove('bell-ring'), 800);
+    });
+
+    // ── Filter buttons (live feeds) ──────────────────────────
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    // ═══════════════════════════════════════════════════
+    //   WEBCAM + VIDEO UPLOAD FUNCTIONALITY
+    //   (Connects to Node.js backend)
+    // ═══════════════════════════════════════════════════
+
+    let webcamStream = null;
+    let webcamWs = null;
+    let webcamInterval = null;
+    const SEND_INTERVAL = 2500; // ms between frame sends
+
+    // ── Start Webcam ─────────────────────────────────────
+    async function startWebcam() {
+      try {
+        webcamStream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
+        const video = document.getElementById('webcamVideo');
+        video.srcObject = webcamStream;
+        document.getElementById('webcamPlaceholder').style.display = 'none';
+        document.getElementById('webcamOverlay').style.display = 'flex';
+        document.getElementById('btnStartCam').disabled = true;
+        document.getElementById('btnStopCam').disabled = false;
+        document.getElementById('webcamStatus').textContent = 'Camera Online';
+        document.getElementById('webcamStatus').className = 'webcam-status online';
+
+        // Connect WebSocket to Node.js backend
+        const wsProto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+        webcamWs = new WebSocket(`${wsProto}//${location.host}/ws/feed`);
+        webcamWs.onopen = () => { console.log('[Webcam] WebSocket connected'); };
+        webcamWs.onmessage = (evt) => {
+          const msg = JSON.parse(evt.data);
+          if (msg.type === 'analysis') handleWebcamResult(evt);
+          else if (msg.type === 'alert_sent') {
+            if (msg.emailSent) showEmailToast(msg.message);
+          }
+        };
+        webcamWs.onclose = () => {
+          document.getElementById('webcamDesc').textContent = 'Connection closed';
+          console.log('[Webcam] WebSocket closed');
+        };
+        webcamWs.onerror = (err) => { console.error('[Webcam] WebSocket error:', err); };
+
+        // Start sending frames at interval
+        webcamInterval = setInterval(() => sendWebcamFrame(video), SEND_INTERVAL);
+      } catch (err) {
+        alert('Camera access denied or not available: ' + err.message);
+      }
+    }
+
+    function stopWebcam() {
+      if (webcamStream) { webcamStream.getTracks().forEach(t => t.stop()); webcamStream = null; }
+      if (webcamWs) { webcamWs.close(); webcamWs = null; }
+      if (webcamInterval) { clearInterval(webcamInterval); webcamInterval = null; }
+      document.getElementById('webcamVideo').srcObject = null;
+      document.getElementById('webcamPlaceholder').style.display = 'flex';
+      document.getElementById('webcamOverlay').style.display = 'none';
+      document.getElementById('btnStartCam').disabled = false;
+      document.getElementById('btnStopCam').disabled = true;
+      document.getElementById('webcamStatus').textContent = 'Camera Offline';
+      document.getElementById('webcamStatus').className = 'webcam-status';
+      document.getElementById('webcamDesc').textContent = '—';
+      const c = document.getElementById('webcamCanvas');
+      c.getContext('2d').clearRect(0, 0, c.width, c.height);
+    }
+
+    function sendWebcamFrame(video) {
+      if (!webcamWs || webcamWs.readyState !== WebSocket.OPEN) return;
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(blob => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const b64 = reader.result.split(',')[1];
+          webcamWs.send(JSON.stringify({ type: 'frame', data: b64, camera: 'WEBCAM' }));
+        };
+        reader.readAsDataURL(blob);
+      }, 'image/jpeg', 0.8);
+    }
+
+    function handleWebcamResult(evt) {
+      const msg = JSON.parse(evt.data);
+      if (msg.type !== 'analysis') return;
+      const result = msg.result;
+      const regions = result.regions || [];
+      const m = statusMeta(result.status);
+
+      // Update status badge
+      const badge = document.getElementById('webcamStateBadge');
+      badge.textContent = m.label;
+      badge.className = 'webcam-state-badge ' + m.cls;
+      document.getElementById('webcamConf').textContent = (result.confidence * 100).toFixed(1) + '%';
+      document.getElementById('webcamDesc').textContent = result.description || '—';
+
+      // Draw bounding boxes on canvas overlay
+      const video = document.getElementById('webcamVideo');
+      const canvas = document.getElementById('webcamCanvas');
+      canvas.width = video.videoWidth || 640;
+      canvas.height = video.videoHeight || 480;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const colors = { aggressive: '#ef4444', suspicious: '#f59e0b', normal: '#22c55e' };
+      regions.forEach(r => {
+        if (!r.bbox || r.bbox.length !== 4) return;
+        const [x1r, y1r, x2r, y2r] = r.bbox;
+        const x = x1r * canvas.width, y = y1r * canvas.height;
+        const w = (x2r - x1r) * canvas.width, h = (y2r - y1r) * canvas.height;
+        const col = colors[r.threat_level] || colors.normal;
+
+        ctx.strokeStyle = col; ctx.lineWidth = 2.5;
+        ctx.strokeRect(x, y, w, h);
+        ctx.fillStyle = col;
+        const lbl = `${r.label} [${(r.threat_level || '').toUpperCase()}]`;
+        const tw = ctx.measureText(lbl).width + 8;
+        ctx.fillRect(x, y - 20, tw, 20);
+        ctx.fillStyle = '#fff'; ctx.font = '12px Inter, sans-serif';
+        ctx.fillText(lbl, x + 4, y - 5);
+      });
+
+      // Add incident to local list & update stats
+      if (msg.incident) {
+        INCIDENTS.unshift(msg.incident);
+        if (INCIDENTS.length > 50) INCIDENTS.pop();
+        updateStats();
+        renderRecentAlerts();
+      }
+      loadApiStats();
+    }
+
+    // ── Handle Email Alert Sent Notification ─────────────
+    function handleAlertSent(evt) {
+      const msg = JSON.parse(evt.data);
+      if (msg.type === 'alert_sent' && msg.emailSent) {
+        showEmailToast(msg.message);
+      }
+    }
+
+    function showEmailToast(message) {
+      const container = document.getElementById('emailToastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'email-toast animate-toast-in';
+      toast.innerHTML = `
+        <div class="email-toast-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        <div class="email-toast-content">
+          <div class="email-toast-title">Alert Email Sent</div>
+          <div class="email-toast-msg">${message}</div>
+        </div>
+        <button class="email-toast-close" onclick="this.parentElement.remove()">&times;</button>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.add('animate-toast-out');
+        setTimeout(() => toast.remove(), 400);
+      }, 6000);
+    }
+
+    // ── Video Upload (Client-side frame extraction) ──────
+    const dropzone = document.getElementById('uploadDropzone');
+    if (dropzone) {
+      dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+      dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+      dropzone.addEventListener('drop', e => {
+        e.preventDefault(); dropzone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) handleVideoUpload(e.dataTransfer.files[0]);
+      });
+    }
+
+    /**
+     * Extract frames from a video file using HTML5 Video + Canvas.
+     * Returns an array of { data: base64, timestamp, timestamp_sec, index }
+     */
+    function extractFrames(file, maxFrames = 15) {
+      return new Promise((resolve, reject) => {
+        const video = document.createElement('video');
+        video.preload = 'auto';
+        video.muted = true;
+        const url = URL.createObjectURL(file);
+        video.src = url;
+
+        video.onloadedmetadata = () => {
+          const duration = video.duration;
+          const fps = 30; // assumed
+          const interval = Math.max(duration / maxFrames, 2);
+          const times = [];
+          for (let t = 0; t < duration; t += interval) {
+            times.push(t);
+            if (times.length >= maxFrames) break;
+          }
+
+          const frames = [];
+          let idx = 0;
+
+          function captureNext() {
+            if (idx >= times.length) {
+              URL.revokeObjectURL(url);
+              resolve({ frames, duration, fps });
+              return;
+            }
+            video.currentTime = times[idx];
+          }
+
+          video.onseeked = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            const b64 = dataUrl.split(',')[1];
+            frames.push({
+              data: b64,
+              index: idx,
+              timestamp: `${times[idx].toFixed(1)}s`,
+              timestamp_sec: Math.round(times[idx] * 10) / 10,
+            });
+            idx++;
+            captureNext();
+          };
+
+          captureNext();
+        };
+
+        video.onerror = () => {
+          URL.revokeObjectURL(url);
+          reject(new Error('Cannot load video file'));
+        };
+      });
+    }
+
+    async function handleVideoUpload(file) {
+      if (!file) return;
+      if (!file.type.startsWith('video/')) { alert('Please select a video file'); return; }
+      if (file.size > 100 * 1024 * 1024) { alert('File must be under 100 MB'); return; }
+
+      // Show progress
+      document.getElementById('uploadProgressWrap').style.display = 'block';
+      document.getElementById('uploadResults').style.display = 'none';
+      const fill = document.getElementById('uploadProgressFill');
+      const text = document.getElementById('uploadProgressText');
+      fill.style.width = '0%';
+      text.textContent = `Extracting frames from ${file.name}...`;
+
+      // Animate progress
+      let pct = 0;
+      const progTimer = setInterval(() => {
+        pct = Math.min(pct + Math.random() * 2, 85);
+        fill.style.width = pct + '%';
+      }, 500);
+
+      try {
+        // Step 1: Extract frames client-side
+        const extracted = await extractFrames(file, 15);
+        text.textContent = `Analyzing ${extracted.frames.length} frames with Gemini AI...`;
+        pct = 40;
+        fill.style.width = '40%';
+
+        // Step 2: Send frames to server for Gemini analysis
+        const resp = await fetch('/api/analyze-batch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            frames: extracted.frames,
+            filename: file.name,
+          }),
+        });
+
+        clearInterval(progTimer);
+        if (!resp.ok) throw new Error('Analysis failed: ' + resp.status);
+        const data = await resp.json();
+
+        fill.style.width = '100%';
+        text.textContent = `Done — ${data.frames_analyzed} frames analyzed`;
+        setTimeout(() => { document.getElementById('uploadProgressWrap').style.display = 'none'; }, 1500);
+
+        renderUploadResults({
+          ...data,
+          duration: `${extracted.duration.toFixed(1)}s`,
+          fps: 30,
+        });
+        loadApiStats();
+      } catch (err) {
+        clearInterval(progTimer);
+        fill.style.width = '0%';
+        text.textContent = 'Error: ' + err.message;
+      }
+    }
+
+    function renderUploadResults(data) {
+      document.getElementById('uploadResults').style.display = 'block';
+      document.getElementById('uploadSummary').innerHTML =
+        `<strong>${data.filename}</strong> — ${data.duration} · ${data.frames_analyzed} frames · ${data.fps} FPS`;
+
+      const gallery = document.getElementById('resultsGallery');
+      gallery.innerHTML = data.analyses.map((a, i) => {
+        const m = statusMeta(a.result.status);
+        const conf = (a.result.confidence * 100).toFixed(1);
+        const regions = a.result.regions || [];
+        const regionHtml = regions.map(r =>
+          `<div class="region-tag ${statusMeta(r.threat_level || 'normal').cls}">${r.label} — ${(r.threat_level || 'normal').toUpperCase()}</div>`
+        ).join('');
+
+        // For uploaded videos, we don't have server-drawn annotated frames,
+        // so we draw bounding boxes on a canvas client-side
+        const frameId = `uploadFrame_${i}`;
+        const canvasId = `uploadCanvas_${i}`;
+
+        // If server sent annotated_frame, use it; otherwise we'll draw client-side
+        const imgSrc = a.annotated_frame
+          ? `data:image/jpeg;base64,${a.annotated_frame}`
+          : `data:image/jpeg;base64,${a.original_frame || ''}`;
+
+        return `<div class="result-frame-card animate-in" style="animation-delay:${i * 0.08}s">
+        <div class="result-frame-img">
+          <img id="${frameId}" src="${imgSrc}" alt="Frame ${a.frame_index}">
+          <div class="result-frame-time">${a.timestamp}</div>
+          <div class="result-frame-badge ${m.cls}">${m.label} ${conf}%</div>
+        </div>
+        <div class="result-frame-info">
+          <div class="result-desc">${a.result.description || 'No description'}</div>
+          <div class="result-regions">${regionHtml || '<span class="text-muted">No detected regions</span>'}</div>
+        </div>
+      </div>`;
+      }).join('');
+    }
+
+    // ── Init ─────────────────────────────────────────────────
+    updateStats();
+    renderRecentAlerts();
+    loadSystemInfo();
+    loadApiStats();
+  </script>
+
+  <!-- Email Toast Container -->
+  <div id="emailToastContainer" class="email-toast-container"></div>
+</body>
+
+</html>
