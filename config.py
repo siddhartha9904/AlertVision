@@ -3,7 +3,7 @@ AlertVision Configuration
 """
 
 # ── Gemini API ──────────────────────────────────────────────
-GEMINI_API_KEY = "AIzaSyCfskTtARpzkoqtb4cuImHcwIYzSnUjQu0"
+GEMINI_API_KEY = "your-api-key"
 GEMINI_MODEL = "gemini-2.0-flash"
 
 # ── Video Capture ───────────────────────────────────────────
